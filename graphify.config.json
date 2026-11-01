@@ -1,0 +1,59 @@
+{
+  "$schema": "https://graphify.dev/schema/v1.json",
+  "name": "krishi-mitra",
+  "version": "1.0.0",
+  "description": "Codebase Knowledge Graph mapping Earth Observation telemetry, FAO-56 biophysical math, Gemma AI, and ElevenLabs voice pipelines.",
+  "parser": {
+    "engine": "tree-sitter",
+    "languages": ["javascript", "html", "json", "markdown"],
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "scan": {
+    "include": [
+      "src/**/*.js",
+      "src/data/*.js",
+      "src/modules/*.js",
+      "server.js",
+      "index.html"
+    ],
+    "exclude": [
+      "node_modules/**",
+      "dist/**",
+      ".git/**"
+    ]
+  },
+  "layers": [
+    { "id": "Telemetry", "label": "Earth Observation & Remote Sensing Telemetry" },
+    { "id": "Agronomy", "label": "FAO-56 Biophysical & Microclimate Models" },
+    { "id": "AI_Voice", "label": "Gemma AI & ElevenLabs Voice Intelligence" },
+    { "id": "Backend", "label": "Hardened Express Server & Security Proxies" },
+    { "id": "Frontend", "label": "UI Orchestrator, GIS & Vernacular Localization" }
+  ],
+  "edgeTaxonomy": [
+    { "type": "EXPLICIT_IMPORT", "category": "Code", "description": "Static ES6 import declaration" },
+    { "type": "RUNTIME_DATA_FLOW", "category": "Pipeline", "description": "Dynamic telemetry or payload exchange" },
+    { "type": "MATHEMATICAL_DERIVATION", "category": "Agronomy", "description": "Biophysical equation dependence (FAO-56)" },
+    { "type": "PROXIED_UPSTREAM", "category": "Security", "description": "Server-shielded API proxy call" },
+    { "type": "VERNACULAR_LOCALIZATION", "category": "i18n", "description": "Bilingual DOM binding" }
+  ],
+  "presets": [
+    {
+      "name": "SatelliteToVoicePipeline",
+      "description": "Trace full path from Copernicus ERA5-Land satellite moisture to ElevenLabs spoken audio",
+      "from": "OpenMeteoAPI",
+      "to": "ElevenLabsVoice"
+    },
+    {
+      "name": "FAO56ImpactGraph",
+      "description": "All mathematical inputs and downstream consumers of FAO-56 Dual Water Balance",
+      "node": "FAO56WaterBalance"
+    },
+    {
+      "name": "SecurityBoundaryCheck",
+      "description": "Verify rate limiter and CSP boundaries around API endpoints",
+      "node": "ExpressHardenedServer"
+    }
+  ]
+}
+

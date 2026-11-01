@@ -1,0 +1,349 @@
+{
+  "meta": {
+    "generator": "Graphify Labs v1.2.0 (Tree-Sitter AST & Data Flow Pipeline)",
+    "project": "Krishi Mitra (कृषि मित्र)",
+    "generatedAt": "2026-10-31T08:20:44.462Z",
+    "nodeCount": 18,
+    "edgeCount": 24
+  },
+  "nodes": [
+    {
+      "id": "OpenMeteoAPI",
+      "label": "Open-Meteo & ERA5-Land Telemetry",
+      "layer": "Telemetry",
+      "type": "ExternalDataSource",
+      "file": "src/modules/api.js",
+      "description": "ECMWF Copernicus ERA5-Land reanalysis (0-7cm & 7-28cm soil moisture) and 16-day atmospheric forecast."
+    },
+    {
+      "id": "Mulberry32Fallback",
+      "label": "Mulberry32 Deterministic Fallback PRNG",
+      "layer": "Telemetry",
+      "type": "DeterministicModel",
+      "file": "src/modules/api.js",
+      "description": "FNV-1a 32-bit hash + Mulberry32 PRNG generating mathematically continuous diurnal weather during network outages."
+    },
+    {
+      "id": "EsriMaxarSatellite",
+      "label": "Esri World Imagery (Maxar)",
+      "layer": "Telemetry",
+      "type": "GISService",
+      "file": "src/modules/map.js",
+      "description": "High-resolution satellite imagery tiles for sub-meter field boundary tracing."
+    },
+    {
+      "id": "GeospatialGeometry",
+      "label": "WGS84 Spherical Geodesy",
+      "layer": "Agronomy",
+      "type": "MathematicalModel",
+      "file": "src/modules/calculations.js",
+      "description": "Haversine distance, centroid calculation, and Green's Theorem on a sphere for plot acreage."
+    },
+    {
+      "id": "FAO56WaterBalance",
+      "label": "FAO-56 Dual Crop Water Balance",
+      "layer": "Agronomy",
+      "type": "BiophysicalModel",
+      "file": "src/modules/calculations.js",
+      "description": "Dynamic root depth Zr(t), 4-stage Kc(t), TAW, RAW depletion fractions, and effective rain thresholds."
+    },
+    {
+      "id": "GDDGrowthStages",
+      "label": "Growing Degree Days (GDD) Phenology",
+      "layer": "Agronomy",
+      "type": "PhenologyModel",
+      "file": "src/modules/calculations.js",
+      "description": "Thermal heat unit accumulation tracking crop maturation and stage transitions."
+    },
+    {
+      "id": "PestEpidemiology",
+      "label": "Wallin DSI & Leaf Wetness Model",
+      "layer": "Agronomy",
+      "type": "EpidemiologicalModel",
+      "file": "src/modules/pestModel.js",
+      "description": "Tracks Leaf Wetness Duration (RH >= 90%) and accumulates Wallin DSI points for pre-symptomatic fungal alerts."
+    },
+    {
+      "id": "FertilizerLeachingGuard",
+      "label": "4R Nutrient Stewardship & Leaching Guard",
+      "layer": "Agronomy",
+      "type": "NutrientModel",
+      "file": "src/modules/fertilizerModel.js",
+      "description": "48h precipitation hazard sensor (>=12mm triggers Hold Urea) alongside phenology split dosing."
+    },
+    {
+      "id": "CropEconomicRanking",
+      "label": "Multi-Criteria Crop Ranking & Profit Engine",
+      "layer": "Agronomy",
+      "type": "EconomicModel",
+      "file": "src/modules/calculations.js",
+      "description": "Composite suitability score (0-100) and net profit per acre under normal, drought, and heavy monsoon scenarios."
+    },
+    {
+      "id": "MarketIntelligence",
+      "label": "Mandi Arbitrage & Market Intelligence Engine",
+      "layer": "Agronomy",
+      "type": "MarketModel",
+      "file": "src/modules/marketModel.js",
+      "description": "Regional APMC Mandi price arbitrage with transport freight deduction, GoI MSP spreads, WDRA storage breakeven, and CACP cultivation cost economics."
+    },
+    {
+      "id": "GemmaSummarizer",
+      "label": "Gemma AI Agronomic & Economic Summarizer",
+      "layer": "AI_Voice",
+      "type": "LLMIntelligence",
+      "file": "src/modules/aiAdvisor.js",
+      "description": "Translates biophysical calculations, FAO-56 numbers, and crop profit metrics into a 60-word conversational farmer advisory."
+    },
+    {
+      "id": "ElevenLabsVoice",
+      "label": "ElevenLabs Multilingual Voice Assistant (Kisan Vaani)",
+      "layer": "AI_Voice",
+      "type": "VoiceSynthesis",
+      "file": "src/modules/aiAdvisor.js",
+      "description": "Streams lifelike audio in authentic Hindi and Indian-accented English using eleven_multilingual_v2 model."
+    },
+    {
+      "id": "ExpressHardenedServer",
+      "label": "Hardened Production Express Backend",
+      "layer": "Backend",
+      "type": "HttpServer",
+      "file": "server.js",
+      "description": "Content Security Policy, anti-clickjacking headers, sliding-window IP rate limiting (60 req/min), and SPA routing."
+    },
+    {
+      "id": "AgmarknetProxy",
+      "label": "Agmarknet Mandi Commodity Rates Proxy",
+      "layer": "Backend",
+      "type": "SecureProxy",
+      "file": "server.js",
+      "description": "Shields Government of India data.gov.in API keys on the server and sanitizes commodity query parameters via regex."
+    },
+    {
+      "id": "ClientController",
+      "label": "Client Application Controller (main.js)",
+      "layer": "Frontend",
+      "type": "Orchestrator",
+      "file": "src/main.js",
+      "description": "Coordinates UI events, Leaflet map layers, reactive SVG chart rendering, and voice audio triggers."
+    },
+    {
+      "id": "StateStorage",
+      "label": "Resilient Multi-Key Persistence Layer",
+      "layer": "Frontend",
+      "type": "PersistenceEngine",
+      "file": "src/modules/storage.js",
+      "description": "Manages km.session, km.location, km.plot, km.setup, and km.lang with automated JSON corruption recovery."
+    },
+    {
+      "id": "VernacularI18n",
+      "label": "Bilingual Vernacular Translation Engine",
+      "layer": "Frontend",
+      "type": "LocalizationEngine",
+      "file": "src/data/i18n.js",
+      "description": "Zero-latency English <-> Hindi translation dictionary with contextually authentic agricultural terminology."
+    },
+    {
+      "id": "StepNavigationGuards",
+      "label": "Sequential Step Progression Guards",
+      "layer": "Frontend",
+      "type": "WorkflowGuard",
+      "file": "src/modules/navigation.js",
+      "description": "Guarantees valid workflow sequence, locking advanced calculation steps until prerequisite data is confirmed."
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "OpenMeteoAPI",
+      "target": "ClientController",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Hourly Weather & ERA5-Land Payloads",
+      "explicit": true
+    },
+    {
+      "id": "e2",
+      "source": "Mulberry32Fallback",
+      "target": "OpenMeteoAPI",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Zero-Downtime Deterministic Fallback",
+      "explicit": true
+    },
+    {
+      "id": "e3",
+      "source": "EsriMaxarSatellite",
+      "target": "ClientController",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Sub-Meter Field Tiles",
+      "explicit": true
+    },
+    {
+      "id": "e4",
+      "source": "ClientController",
+      "target": "GeospatialGeometry",
+      "type": "EXPLICIT_IMPORT",
+      "label": "Polygon Vertices to Spherical Area",
+      "explicit": true
+    },
+    {
+      "id": "e5",
+      "source": "GeospatialGeometry",
+      "target": "FAO56WaterBalance",
+      "type": "MATHEMATICAL_DERIVATION",
+      "label": "Field Centroid & Acreage Coordinates",
+      "explicit": false
+    },
+    {
+      "id": "e6",
+      "source": "OpenMeteoAPI",
+      "target": "FAO56WaterBalance",
+      "type": "MATHEMATICAL_DERIVATION",
+      "label": "ERA5-Land Soil Moisture (0-7cm & 7-28cm) + ET0",
+      "explicit": false
+    },
+    {
+      "id": "e7",
+      "source": "GDDGrowthStages",
+      "target": "FAO56WaterBalance",
+      "type": "MATHEMATICAL_DERIVATION",
+      "label": "Accumulated GDD -> Dynamic Kc(t) & Root Depth Zr(t)",
+      "explicit": true
+    },
+    {
+      "id": "e8",
+      "source": "OpenMeteoAPI",
+      "target": "PestEpidemiology",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Hourly Relative Humidity & Canopy Temperature",
+      "explicit": true
+    },
+    {
+      "id": "e9",
+      "source": "OpenMeteoAPI",
+      "target": "FertilizerLeachingGuard",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "48h Forecast Precipitation Sum",
+      "explicit": true
+    },
+    {
+      "id": "e10",
+      "source": "FAO56WaterBalance",
+      "target": "CropEconomicRanking",
+      "type": "MATHEMATICAL_DERIVATION",
+      "label": "Seasonal Water Deficit vs Crop Irrigation Need",
+      "explicit": true
+    },
+    {
+      "id": "e11",
+      "source": "AgmarknetProxy",
+      "target": "CropEconomicRanking",
+      "type": "PROXIED_UPSTREAM",
+      "label": "Live Mandi Wholesale Commodity Rates",
+      "explicit": true
+    },
+    {
+      "id": "e12",
+      "source": "FAO56WaterBalance",
+      "target": "GemmaSummarizer",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Irrigation Verdict, Mm Depth & Volume (Liters)",
+      "explicit": true
+    },
+    {
+      "id": "e13",
+      "source": "PestEpidemiology",
+      "target": "GemmaSummarizer",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Wallin DSI Level & Bio-Control Recipe",
+      "explicit": true
+    },
+    {
+      "id": "e14",
+      "source": "FertilizerLeachingGuard",
+      "target": "GemmaSummarizer",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Leaching Risk Alert & Phenology Split Dose",
+      "explicit": true
+    },
+    {
+      "id": "e15",
+      "source": "CropEconomicRanking",
+      "target": "GemmaSummarizer",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Top-Scoring Crops, Net Profit/Acre & Scenarios",
+      "explicit": true
+    },
+    {
+      "id": "e16",
+      "source": "GemmaSummarizer",
+      "target": "ElevenLabsVoice",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Synthesized Vernacular Advice Text (Hindi / English)",
+      "explicit": true
+    },
+    {
+      "id": "e17",
+      "source": "ExpressHardenedServer",
+      "target": "GemmaSummarizer",
+      "type": "PROXIED_UPSTREAM",
+      "label": "Shielded Google Generative Language API Endpoint",
+      "explicit": true
+    },
+    {
+      "id": "e18",
+      "source": "ExpressHardenedServer",
+      "target": "ElevenLabsVoice",
+      "type": "PROXIED_UPSTREAM",
+      "label": "Shielded ElevenLabs Text-to-Speech API Proxy",
+      "explicit": true
+    },
+    {
+      "id": "e19",
+      "source": "ClientController",
+      "target": "StateStorage",
+      "type": "EXPLICIT_IMPORT",
+      "label": "Full-State Persistence & Auto-Save Recovery",
+      "explicit": true
+    },
+    {
+      "id": "e20",
+      "source": "ClientController",
+      "target": "VernacularI18n",
+      "type": "EXPLICIT_IMPORT",
+      "label": "DOM Attribute Localization (data-i18n)",
+      "explicit": true
+    },
+    {
+      "id": "e21",
+      "source": "ClientController",
+      "target": "StepNavigationGuards",
+      "type": "EXPLICIT_IMPORT",
+      "label": "Sequential Step Lock Validation (canNavigateToStep)",
+      "explicit": true
+    },
+    {
+      "id": "e22",
+      "source": "CropEconomicRanking",
+      "target": "MarketIntelligence",
+      "type": "MATHEMATICAL_DERIVATION",
+      "label": "Crop Profit & Yield Benchmarks to Mandi Arbitrage",
+      "explicit": true
+    },
+    {
+      "id": "e23",
+      "source": "ClientController",
+      "target": "MarketIntelligence",
+      "type": "EXPLICIT_IMPORT",
+      "label": "Field Location & Acreage to Arbitrage & Storage Simulator",
+      "explicit": true
+    },
+    {
+      "id": "e24",
+      "source": "MarketIntelligence",
+      "target": "GemmaSummarizer",
+      "type": "RUNTIME_DATA_FLOW",
+      "label": "Best Mandi Net Gain, MSP Spread & Storage Breakeven to AI Advisor",
+      "explicit": true
+    }
+  ]
+}

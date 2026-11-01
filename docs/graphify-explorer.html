@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Krishi Mitra — Graphify Codebase Architecture Knowledge Graph</title>
+<style>
+  :root {
+    --bg: #141f17;
+    --card: #1c2b20;
+    --card-hover: #24382a;
+    --line: #2d4233;
+    --text: #f4edd9;
+    --text-muted: #a3b29c;
+    --gold: #d9ae61;
+    --green: #4f8a58;
+    --cyan: #4ea3a8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 24px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  h1 { font-size: 24px; color: var(--gold); display: flex; align-items: center; gap: 10px; }
+  .badge {
+    background: rgba(217,174,97,0.18);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(217,174,97,0.3);
+  }
+  .subtitle { font-size: 13.5px; color: var(--text-muted); margin-top: 4px; }
+  .metrics {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .metric-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 14px 20px;
+    border-radius: 12px;
+    min-width: 150px;
+  }
+  .metric-num { font-size: 26px; font-weight: 700; color: #fff; }
+  .metric-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    width: 280px;
+  }
+  .btn-query {
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-query:hover { background: var(--card-hover); border-color: var(--gold); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .node-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s;
+  }
+  .node-card:hover {
+    border-color: var(--gold);
+    background: var(--card-hover);
+    transform: translateY(-2px);
+  }
+  .node-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .node-name { font-size: 15px; font-weight: 600; color: #fff; }
+  .node-layer {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(79,138,88,0.22);
+    color: #8ed699;
+    border: 1px solid rgba(79,138,88,0.4);
+  }
+  .node-file { font-family: monospace; font-size: 11px; color: var(--gold); margin: 4px 0 8px; }
+  .node-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.45; }
+  .node-conns {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    font-size: 11.5px;
+  }
+  .conn-item { color: #d3dfce; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .conn-type { color: var(--cyan); font-weight: 600; font-size: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1><span>Graphify Labs</span> Codebase Knowledge Graph <span class="badge">PROD ARCHITECTURE</span></h1>
+      <p class="subtitle">Queryable AST & telemetry pipeline: Earth Observation &rarr; FAO-56 &rarr; Gemma AI &rarr; ElevenLabs Voice</p>
+    </div>
+  </header>
+
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="metric-num">18</div>
+      <div class="metric-lbl">Architecture Nodes</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num">24</div>
+      <div class="metric-lbl">Explicit & Inferred Edges</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num">5</div>
+      <div class="metric-lbl">Subsystem Layers</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num">100%</div>
+      <div class="metric-lbl">Biophysical Grounding</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search components or equations..." />
+    <button class="btn-query" onclick="filterLayer('All')">All</button>
+    <button class="btn-query" onclick="filterLayer('Telemetry')">Telemetry</button>
+    <button class="btn-query" onclick="filterLayer('Agronomy')">Agronomy (FAO-56)</button>
+    <button class="btn-query" onclick="filterLayer('AI_Voice')">AI & Voice</button>
+    <button class="btn-query" onclick="filterLayer('Backend')">Backend Security</button>
+  </div>
+
+  <div class="grid" id="nodesGrid">
+    
+          <div class="node-card" data-layer="Telemetry" data-text="open-meteo & era5-land telemetry src/modules/api.js ecmwf copernicus era5-land reanalysis (0-7cm & 7-28cm soil moisture) and 16-day atmospheric forecast.">
+            <div class="node-head">
+              <div class="node-name">Open-Meteo & ERA5-Land Telemetry</div>
+              <span class="node-layer">Telemetry</span>
+            </div>
+            <div class="node-file">src/modules/api.js</div>
+            <p class="node-desc">ECMWF Copernicus ERA5-Land reanalysis (0-7cm & 7-28cm soil moisture) and 16-day atmospheric forecast.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Hourly Weather & ERA5-Land Payloads</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[MATHEMATICAL_DERIVATION]</span>
+                      <span>ERA5-Land Soil Moisture (0-7cm & 7-28cm) + ET0</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Hourly Relative Humidity & Canopy Temperature</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>48h Forecast Precipitation Sum</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Telemetry" data-text="mulberry32 deterministic fallback prng src/modules/api.js fnv-1a 32-bit hash + mulberry32 prng generating mathematically continuous diurnal weather during network outages.">
+            <div class="node-head">
+              <div class="node-name">Mulberry32 Deterministic Fallback PRNG</div>
+              <span class="node-layer">Telemetry</span>
+            </div>
+            <div class="node-file">src/modules/api.js</div>
+            <p class="node-desc">FNV-1a 32-bit hash + Mulberry32 PRNG generating mathematically continuous diurnal weather during network outages.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Zero-Downtime Deterministic Fallback</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Telemetry" data-text="esri world imagery (maxar) src/modules/map.js high-resolution satellite imagery tiles for sub-meter field boundary tracing.">
+            <div class="node-head">
+              <div class="node-name">Esri World Imagery (Maxar)</div>
+              <span class="node-layer">Telemetry</span>
+            </div>
+            <div class="node-file">src/modules/map.js</div>
+            <p class="node-desc">High-resolution satellite imagery tiles for sub-meter field boundary tracing.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Sub-Meter Field Tiles</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Agronomy" data-text="wgs84 spherical geodesy src/modules/calculations.js haversine distance, centroid calculation, and green's theorem on a sphere for plot acreage.">
+            <div class="node-head">
+              <div class="node-name">WGS84 Spherical Geodesy</div>
+              <span class="node-layer">Agronomy</span>
+            </div>
+            <div class="node-file">src/modules/calculations.js</div>
+            <p class="node-desc">Haversine distance, centroid calculation, and Green's Theorem on a sphere for plot acreage.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[MATHEMATICAL_DERIVATION]</span>
+                      <span>Field Centroid & Acreage Coordinates</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Agronomy" data-text="fao-56 dual crop water balance src/modules/calculations.js dynamic root depth zr(t), 4-stage kc(t), taw, raw depletion fractions, and effective rain thresholds.">
+            <div class="node-head">
+              <div class="node-name">FAO-56 Dual Crop Water Balance</div>
+              <span class="node-layer">Agronomy</span>
+            </div>
+            <div class="node-file">src/modules/calculations.js</div>
+            <p class="node-desc">Dynamic root depth Zr(t), 4-stage Kc(t), TAW, RAW depletion fractions, and effective rain thresholds.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[MATHEMATICAL_DERIVATION]</span>
+                      <span>Seasonal Water Deficit vs Crop Irrigation Need</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Irrigation Verdict, Mm Depth & Volume (Liters)</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Agronomy" data-text="growing degree days (gdd) phenology src/modules/calculations.js thermal heat unit accumulation tracking crop maturation and stage transitions.">
+            <div class="node-head">
+              <div class="node-name">Growing Degree Days (GDD) Phenology</div>
+              <span class="node-layer">Agronomy</span>
+            </div>
+            <div class="node-file">src/modules/calculations.js</div>
+            <p class="node-desc">Thermal heat unit accumulation tracking crop maturation and stage transitions.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[MATHEMATICAL_DERIVATION]</span>
+                      <span>Accumulated GDD -> Dynamic Kc(t) & Root Depth Zr(t)</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Agronomy" data-text="wallin dsi & leaf wetness model src/modules/pestmodel.js tracks leaf wetness duration (rh >= 90%) and accumulates wallin dsi points for pre-symptomatic fungal alerts.">
+            <div class="node-head">
+              <div class="node-name">Wallin DSI & Leaf Wetness Model</div>
+              <span class="node-layer">Agronomy</span>
+            </div>
+            <div class="node-file">src/modules/pestModel.js</div>
+            <p class="node-desc">Tracks Leaf Wetness Duration (RH >= 90%) and accumulates Wallin DSI points for pre-symptomatic fungal alerts.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Wallin DSI Level & Bio-Control Recipe</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Agronomy" data-text="4r nutrient stewardship & leaching guard src/modules/fertilizermodel.js 48h precipitation hazard sensor (>=12mm triggers hold urea) alongside phenology split dosing.">
+            <div class="node-head">
+              <div class="node-name">4R Nutrient Stewardship & Leaching Guard</div>
+              <span class="node-layer">Agronomy</span>
+            </div>
+            <div class="node-file">src/modules/fertilizerModel.js</div>
+            <p class="node-desc">48h precipitation hazard sensor (>=12mm triggers Hold Urea) alongside phenology split dosing.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Leaching Risk Alert & Phenology Split Dose</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Agronomy" data-text="multi-criteria crop ranking & profit engine src/modules/calculations.js composite suitability score (0-100) and net profit per acre under normal, drought, and heavy monsoon scenarios.">
+            <div class="node-head">
+              <div class="node-name">Multi-Criteria Crop Ranking & Profit Engine</div>
+              <span class="node-layer">Agronomy</span>
+            </div>
+            <div class="node-file">src/modules/calculations.js</div>
+            <p class="node-desc">Composite suitability score (0-100) and net profit per acre under normal, drought, and heavy monsoon scenarios.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Top-Scoring Crops, Net Profit/Acre & Scenarios</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[MATHEMATICAL_DERIVATION]</span>
+                      <span>Crop Profit & Yield Benchmarks to Mandi Arbitrage</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Agronomy" data-text="mandi arbitrage & market intelligence engine src/modules/marketmodel.js regional apmc mandi price arbitrage with transport freight deduction, goi msp spreads, wdra storage breakeven, and cacp cultivation cost economics.">
+            <div class="node-head">
+              <div class="node-name">Mandi Arbitrage & Market Intelligence Engine</div>
+              <span class="node-layer">Agronomy</span>
+            </div>
+            <div class="node-file">src/modules/marketModel.js</div>
+            <p class="node-desc">Regional APMC Mandi price arbitrage with transport freight deduction, GoI MSP spreads, WDRA storage breakeven, and CACP cultivation cost economics.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Best Mandi Net Gain, MSP Spread & Storage Breakeven to AI Advisor</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="AI_Voice" data-text="gemma ai agronomic & economic summarizer src/modules/aiadvisor.js translates biophysical calculations, fao-56 numbers, and crop profit metrics into a 60-word conversational farmer advisory.">
+            <div class="node-head">
+              <div class="node-name">Gemma AI Agronomic & Economic Summarizer</div>
+              <span class="node-layer">AI_Voice</span>
+            </div>
+            <div class="node-file">src/modules/aiAdvisor.js</div>
+            <p class="node-desc">Translates biophysical calculations, FAO-56 numbers, and crop profit metrics into a 60-word conversational farmer advisory.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[RUNTIME_DATA_FLOW]</span>
+                      <span>Synthesized Vernacular Advice Text (Hindi / English)</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="AI_Voice" data-text="elevenlabs multilingual voice assistant (kisan vaani) src/modules/aiadvisor.js streams lifelike audio in authentic hindi and indian-accented english using eleven_multilingual_v2 model.">
+            <div class="node-head">
+              <div class="node-name">ElevenLabs Multilingual Voice Assistant (Kisan Vaani)</div>
+              <span class="node-layer">AI_Voice</span>
+            </div>
+            <div class="node-file">src/modules/aiAdvisor.js</div>
+            <p class="node-desc">Streams lifelike audio in authentic Hindi and Indian-accented English using eleven_multilingual_v2 model.</p>
+            
+          </div>
+        
+          <div class="node-card" data-layer="Backend" data-text="hardened production express backend server.js content security policy, anti-clickjacking headers, sliding-window ip rate limiting (60 req/min), and spa routing.">
+            <div class="node-head">
+              <div class="node-name">Hardened Production Express Backend</div>
+              <span class="node-layer">Backend</span>
+            </div>
+            <div class="node-file">server.js</div>
+            <p class="node-desc">Content Security Policy, anti-clickjacking headers, sliding-window IP rate limiting (60 req/min), and SPA routing.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[PROXIED_UPSTREAM]</span>
+                      <span>Shielded Google Generative Language API Endpoint</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[PROXIED_UPSTREAM]</span>
+                      <span>Shielded ElevenLabs Text-to-Speech API Proxy</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Backend" data-text="agmarknet mandi commodity rates proxy server.js shields government of india data.gov.in api keys on the server and sanitizes commodity query parameters via regex.">
+            <div class="node-head">
+              <div class="node-name">Agmarknet Mandi Commodity Rates Proxy</div>
+              <span class="node-layer">Backend</span>
+            </div>
+            <div class="node-file">server.js</div>
+            <p class="node-desc">Shields Government of India data.gov.in API keys on the server and sanitizes commodity query parameters via regex.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[PROXIED_UPSTREAM]</span>
+                      <span>Live Mandi Wholesale Commodity Rates</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Frontend" data-text="client application controller (main.js) src/main.js coordinates ui events, leaflet map layers, reactive svg chart rendering, and voice audio triggers.">
+            <div class="node-head">
+              <div class="node-name">Client Application Controller (main.js)</div>
+              <span class="node-layer">Frontend</span>
+            </div>
+            <div class="node-file">src/main.js</div>
+            <p class="node-desc">Coordinates UI events, Leaflet map layers, reactive SVG chart rendering, and voice audio triggers.</p>
+            
+                <div class="node-conns">
+                  <div style="color:var(--text-muted);font-weight:600;font-size:10.5px">OUTGOING PIPELINES:</div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[EXPLICIT_IMPORT]</span>
+                      <span>Polygon Vertices to Spherical Area</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[EXPLICIT_IMPORT]</span>
+                      <span>Full-State Persistence & Auto-Save Recovery</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[EXPLICIT_IMPORT]</span>
+                      <span>DOM Attribute Localization (data-i18n)</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[EXPLICIT_IMPORT]</span>
+                      <span>Sequential Step Lock Validation (canNavigateToStep)</span>
+                    </div>
+                  
+                    <div class="conn-item">
+                      <span>&rarr;</span>
+                      <span class="conn-type">[EXPLICIT_IMPORT]</span>
+                      <span>Field Location & Acreage to Arbitrage & Storage Simulator</span>
+                    </div>
+                  
+                </div>
+              
+          </div>
+        
+          <div class="node-card" data-layer="Frontend" data-text="resilient multi-key persistence layer src/modules/storage.js manages km.session, km.location, km.plot, km.setup, and km.lang with automated json corruption recovery.">
+            <div class="node-head">
+              <div class="node-name">Resilient Multi-Key Persistence Layer</div>
+              <span class="node-layer">Frontend</span>
+            </div>
+            <div class="node-file">src/modules/storage.js</div>
+            <p class="node-desc">Manages km.session, km.location, km.plot, km.setup, and km.lang with automated JSON corruption recovery.</p>
+            
+          </div>
+        
+          <div class="node-card" data-layer="Frontend" data-text="bilingual vernacular translation engine src/data/i18n.js zero-latency english <-> hindi translation dictionary with contextually authentic agricultural terminology.">
+            <div class="node-head">
+              <div class="node-name">Bilingual Vernacular Translation Engine</div>
+              <span class="node-layer">Frontend</span>
+            </div>
+            <div class="node-file">src/data/i18n.js</div>
+            <p class="node-desc">Zero-latency English <-> Hindi translation dictionary with contextually authentic agricultural terminology.</p>
+            
+          </div>
+        
+          <div class="node-card" data-layer="Frontend" data-text="sequential step progression guards src/modules/navigation.js guarantees valid workflow sequence, locking advanced calculation steps until prerequisite data is confirmed.">
+            <div class="node-head">
+              <div class="node-name">Sequential Step Progression Guards</div>
+              <span class="node-layer">Frontend</span>
+            </div>
+            <div class="node-file">src/modules/navigation.js</div>
+            <p class="node-desc">Guarantees valid workflow sequence, locking advanced calculation steps until prerequisite data is confirmed.</p>
+            
+          </div>
+        
+  </div>
+</div>
+
+<script>
+  function filterLayer(layer) {
+    const cards = document.querySelectorAll('.node-card');
+    cards.forEach(card => {
+      if (layer === 'All' || card.dataset.layer === layer) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.node-card');
+    cards.forEach(card => {
+      const match = card.dataset.text.includes(query);
+      card.style.display = match ? 'block' : 'none';
+    });
+  });
+</script>
+</body>
+</html>
